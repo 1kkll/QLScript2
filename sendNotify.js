@@ -301,6 +301,14 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By cc
                                     tempid = temptest.id;
                                 }
                                 const DisableCkBody = await DisableCk(tempid);
+                                if (temptest.value.includes('pt_key=app_open')) {
+                                    let DisableStatus = DisableCkBody == 200 ? "成功" : "失败";
+                                    console.log(`WSCK子CK禁用--${DisableStatus}`);
+                                    if (!process.env.AppOpenNotify){
+                                        console.log(`WSCK子CK,默认已取消通知...通知开关 AppOpenNotify`);
+                                        return;
+                                    }
+                                }
                                 strPtPin = temptest.value;
                                 strPtPin = (strPtPin.match(/pt_pin=([^; ]+)(?=;?)/) && strPtPin.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
                                 var strAllNotify = "";
