@@ -186,6 +186,46 @@ if (process.env.NOTIFY_SHOWNAMETYPE) {
     if (ShowRemarkType == "4")
         console.log("检测到显示备注名称，格式为: 备注");
 }
+
+function cleanDesp(desp) {
+    // 寻找所有以 'desp_shit' 开头的环境变量
+    const envVarPattern = /^desp_shit(\d+)$/;
+    // 筛选出符合模式的环境变量键
+    const envVars = Object.keys(process.env)
+        .filter(key => envVarPattern.test(key))
+        .sort((a, b) => {
+            // 将键转换为数字
+            const numA = parseInt(a.match(envVarPattern)[1], 10);
+            const numB = parseInt(b.match(envVarPattern)[1], 10);
+            // 按照数字顺序进行比较
+            return numA - numB;
+        });
+
+    // 如果没有找到任何环境变量，直接返回desp
+    if (envVars.length === 0) {
+        return desp;
+    }
+
+    // 创建正则表达式数组并初始化一个空字符串用于存储匹配到的垃圾信息
+    const shitPatterns = envVars.map(key => new RegExp(process.env[key], "g"));
+    let matchedGarbage = '';
+
+    // 对于每个正则表达式，使用replace方法移除desp中的广告信息
+    // 同时将匹配到的广告信息添加到 matchedGarbage 字符串中
+    shitPatterns.forEach(shitPattern => {
+        const matches = [...desp.matchAll(shitPattern)];
+        if (matches.length > 0) {
+        desp = desp.replace(shitPattern, "");
+        matchedGarbage += matches[0][0] + '\n==============\n';
+        }
+    });
+
+    // 打印出所有匹配的垃圾信息
+    console.log("\n============== 匹配到的垃圾信息: ==============\n" + matchedGarbage);
+
+    return desp;
+}
+
 async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By ccwav Mod', strsummary = "") {
     console.log(`开始发送通知...`);
 
@@ -844,6 +884,8 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By cc
 
     //由于上述两种微信通知需点击进去才能查看到详情，故text(标题内容)携带了账号序号以及昵称信息，方便不点击也可知道是哪个京东哪个活动
     text = text.match(/.*?(?=\s?-)/g) ? text.match(/.*?(?=\s?-)/g)[0] : text;
+    //正则删除通知内容中的广告信息
+    desp = cleanDesp(desp);
     await Promise.all([
         BarkNotify(text, desp, params), //iOS Bark APP
         tgBotNotify(text, desp), //telegram 机器人
