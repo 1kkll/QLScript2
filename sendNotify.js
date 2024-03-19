@@ -56,7 +56,7 @@ let TG_PROXY_HOST = ''; //例如:127.0.0.1(环境变量名:TG_PROXY_HOST)
 let TG_PROXY_PORT = ''; //例如:1080(环境变量名:TG_PROXY_PORT)
 let TG_PROXY_AUTH = ''; //tg代理配置认证参数
 //Telegram api自建的反向代理地址(不懂可忽略,telegram机器人通知推送功能中非必填),默认tg官方api(环境变量名:TG_API_HOST)
-let TG_API_HOST = 'api.telegram.org';
+let TG_API_HOST = 'https://api.telegram.org';
 // =======================================钉钉机器人通知设置区域===========================================
 //此处填你钉钉 bot 的webhook，例如：5a544165465465645d0f31dca676e7bd07415asdasd
 //(环境变量名 DD_BOT_TOKEN)
@@ -262,7 +262,7 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By cc
         TG_PROXY_HOST = '';
         TG_PROXY_PORT = '';
         TG_PROXY_AUTH = '';
-        TG_API_HOST = 'api.telegram.org';
+        TG_API_HOST = 'https://api.telegram.org';
         DD_BOT_TOKEN = '';
         DD_BOT_SECRET = '';
         QYWX_KEY = '';
@@ -1419,7 +1419,7 @@ function tgBotNotify(text, desp) {
     return new Promise(resolve => {
         if (TG_BOT_TOKEN && TG_USER_ID) {
             const options = {
-                url: `https://${TG_API_HOST}/bot${TG_BOT_TOKEN}/sendMessage`,
+                url: `${TG_API_HOST}/bot${TG_BOT_TOKEN}/sendMessage`,
                 json: {
                     chat_id: `${TG_USER_ID}`,
                     text: `${text}\n\n${desp}`,
