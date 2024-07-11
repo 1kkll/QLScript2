@@ -1440,8 +1440,16 @@ function buildLastDesp(desp, author = '') {
     }
 }
 
-function ChangeUserId(desp) {
+function ChangeUserId(desp,text) {
     const QYWX_AM_AY = QYWX_AM.split(',');
+    const regex = /#(\d)$/;
+	const match = text ? text.match(regex) : null;
+    if (match) {
+        const number = match[1];
+        const envVariableName = `USERGP${number}_AMUSER`;
+        const userId = process.env[envVariableName];
+        return userId;
+    }
     if (QYWX_AM_AY[2]) {
         const userIdTmp = QYWX_AM_AY[2].split('|');
         let userId = '';
@@ -1534,7 +1542,7 @@ function qywxamNotify(text, desp, strsummary = "") {
                 options = {
                     url: `https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=${accesstoken}`,
                     json: {
-                        touser: `${ChangeUserId(desp)}`,
+                        touser: `${ChangeUserId(desp,text)}`,
                         agentid: `${QYWX_AM_AY[3]}`,
                         safe: '0',
                         ...options,
@@ -1547,12 +1555,12 @@ function qywxamNotify(text, desp, strsummary = "") {
                 $.post(options, (err, resp, data) => {
                     try {
                         if (err) {
-                            console.log('成员ID:' + ChangeUserId(desp) + '企业微信应用消息发送通知消息失败！！\n');
+                            console.log('成员ID:' + ChangeUserId(desp,text) + '企业微信应用消息发送通知消息失败！！\n');
                             console.log(err);
                         } else {
                             data = JSON.parse(data);
                             if (data.errcode === 0) {
-                                console.log('成员ID:' + ChangeUserId(desp) + '企业微信应用消息发送通知消息成功🎉。\n');
+                                console.log('成员ID:' + ChangeUserId(desp,text) + '企业微信应用消息发送通知消息成功🎉。\n');
                             } else {
                                 console.log(`${data.errmsg}\n`);
                             }
