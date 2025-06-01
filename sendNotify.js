@@ -79,6 +79,8 @@ let QYWX_KEY = '';
 - 文本消息: 1 (数字一)
 - 图文消息（mpnews）: 素材库图片id, 可查看此教程(http://note.youdao.com/s/HMiudGkb)或者(https://note.youdao.com/ynoteshare1/index.html?id=1a0c8aff284ad28cbd011b29b3ad0191&type=note)
  */
+//企业微信应用消息反向代理地址
+let QYWX_AM_API_HOST = 'qyapi.weixin.qq.com';
 let QYWX_AM = '';
 
 // =======================================iGot聚合推送通知设置区域===========================================
@@ -251,6 +253,7 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By cc
         TG_API_HOST = 'api.telegram.org';
         DD_BOT_TOKEN = '';
         DD_BOT_SECRET = '';
+        QYWX_AM_API_HOST = 'qyapi.weixin.qq.com';
         QYWX_KEY = '';
         QYWX_AM = '';
         IGOT_PUSH_KEY = '';
@@ -673,6 +676,8 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By cc
                 DD_BOT_SECRET = process.env["DD_BOT_SECRET" + UseGroupNotify];
             }
         }
+		if (process.env["QYWX_AM_API_HOST"]) 
+			QYWX_AM_API_HOST = process.env["QYWX_AM_API_HOST"];
 
         if (process.env["QYWX_KEY" + UseGroupNotify] && Use_qywxBotNotify) {
             QYWX_KEY = process.env["QYWX_KEY" + UseGroupNotify];
@@ -1439,7 +1444,7 @@ function ddBotNotify(text, desp) {
 function qywxBotNotify(text, desp) {
     return new Promise((resolve) => {
         const options = {
-            url: `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${QYWX_KEY}`,
+            url: `https://${QYWX_AM_API_HOST}/cgi-bin/webhook/send?key=${QYWX_KEY}`,
             json: {
                 msgtype: 'text',
                 text: {
@@ -1590,7 +1595,7 @@ function qywxamNotify(text, desp, strsummary = "") {
                     };
                 }
                 options = {
-                    url: `https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=${accesstoken}`,
+                    url: `https://${QYWX_AM_API_HOST}/cgi-bin/message/send?access_token=${accesstoken}`,
                     json: {
                         touser: `${ChangeUserId(desp,text)}`,
                         agentid: `${QYWX_AM_AY[3]}`,
